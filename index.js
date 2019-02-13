@@ -3,6 +3,9 @@ var airports = [];
 var countries = [];
 var countries_file = 'countries.json';
 var airports_file = 'airports.json';
+var mymap = L.map('map').setView([0.505, -0.09], 3);
+
+mapit();
 
 $(function() {
 
@@ -14,7 +17,7 @@ $(function() {
   $.getJSON(countries_file, function(data)
   {
     countries = data;
-    console.log("countries",countries);
+    console.log("countries loaded");//,countries);
 
 
     console.log("reading airports...");
@@ -22,14 +25,50 @@ $(function() {
     $.get(airports_file, function(data)
       {
         airports = JSON.parse(data);
-        console.log("airports",Object.keys(airports));
-        console.log(airports["FAYP"]);
-        console.log(airports["GOOY"]);
-        var start = turf.point([-122, 48]);
-        var end = turf.point([-77, 39]);
+        console.log("airports loaded");//,Object.keys(airports));
 
+
+        //Set origin and destination
+        origin_ican = "FAYP"
+        destination_ican = "HESH"
+        origin = airports[origin_ican]
+        destination = airports[destination_ican]
+
+        //add markers and straight route to the map.
+        L.marker([origin.lat, origin.lon]).addTo(mymap)
+      		.bindPopup(origin.name);
+        L.marker([destination.lat, destination.lon]).addTo(mymap)
+        	.bindPopup(destination.name);
+
+
+        var start = turf.point([origin.lon, origin.lat]);
+        var end = turf.point([destination.lon, destination.lat,]);
         var greatCircle = turf.greatCircle(start, end, {'name': 'Seattle to DC'});
-        console.log(greatCircle);
+
+        L.geoJSON(greatCircle, {
+        }).addTo(mymap);
+
+
+
+        console.log("Computing intersection between:",origin.name," and ",destination.name);
+
+        //See which countries intersect
+
+        countries.features.forEach(function(feature) {
+
+            var intersection = turf.lineIntersect(greatCircle, feature);
+            if (intersection.features.length!=0) {
+              L.geoJSON(feature).addTo(mymap);
+              console.log("Crosses: ",feature.id," ",feature.properties.name);
+
+            }
+          });
+
+        //Zoom in
+        mymap.fitBounds([
+          [origin.lat, origin.lon],
+          [destination.lat, destination.lon]
+        ]);
 
 
 
@@ -39,3 +78,18 @@ $(function() {
 
 });
 });
+
+function mapit(){
+  console.log("Setting up map..");
+
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(mymap);
+
+
+
+}
