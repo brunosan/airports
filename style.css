@@ -16,6 +16,9 @@ html, body {
   text-decoration: none;
 }
 
+textarea {
+    height: 200px;
+}
 
 #flyovers{padding-bottom: 800px;}
 

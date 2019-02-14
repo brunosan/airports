@@ -13,9 +13,9 @@
   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="better-autocomplete.js"></script>
   <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="better-autocomplete.js"></script>
   <title></title>
 </head>
 <body>
@@ -40,13 +40,13 @@
             </div>
             <div class="col-12">
               <div class="form-group">
-                <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Inserisci testo" rows="3" required></textarea>
+                <textarea id="permits" class="form-control" id="exampleFormControlTextarea1" placeholder="" rows="3" required></textarea>
               </div>
             </div>
             <div class="col-12">
             </div>
             <div class="col-12">
-              <button class="btn btn-light" type="submit">Request Permits</button>
+              <button id="submit" class="btn btn-light" type="">Request Permits</button>
             </div>
           </div>
         </form>
@@ -66,15 +66,5 @@
     </div>
 </div>
 </div>
-
-<div class="row text-center bg-success text-white" id="author">
-  <div class="col-12 mt-4 h3 ">
-  <a href="#">by P. Fattoruso</a>
-</div>
-<div class="col-12 my-2">
-<a href="https://www.linkedin.com/in/paolofattoruso/" target="_blank"><i class="fab fa-linkedin fa-3x"></i></a>
-</div>
-</div>
-  <script src="index.js"></script>
-
+<script src="index.js"></script>
 </body>
