@@ -2,7 +2,7 @@ var cluster = [];
 var airports = {};
 var countries = [];
 var countries_file = 'countries.json';
-var airports_file = 'airports.json';
+var airports_file = 'airports.zip';
 var mymap = L.map('map').setView([0.505, -0.09], 3);
 var origin_ican = "FEGG"
 var destination_ican = "DTTA"
@@ -19,51 +19,63 @@ $(function() {
   {
     countries = data;
     console.log("countries loaded");//,countries);
-
     console.log("reading airports...");
     $("#origin").val("Loading Airports...")
     $("#destination").val("Loading Airports...")
     //TODO Use https://stuk.github.io/jszip/documentation/howto/read_zip.html
-    $.get(airports_file, function(data)
-      {
-        airports = JSON.parse(data);
-        airportnames=[]
-        for (var key in airports){
-          airportnames.push(airports[key].name);
-        }
-        console.log("airports loaded");//,Object.keys(airports));
-        calculate_overpass(origin_ican,destination_ican,airports);
-        //Set up autcomplete fields
-        $( function() {
-          var availableTags = airportnames;
-          $( "#origin" ).autocomplete({
-            source: availableTags,
-            minChars: 3,
-            select: function (event, ui) {
-              origin_ican = getAirportByName(airports,ui.item.value)
-              console.log(ui.item.value,origin_ican);
-              if (destination_ican!=""){
-                calculate_overpass(origin_ican,destination_ican,airports);
+
+    JSZipUtils.getBinaryContent(airports_file, function(err, data) {
+      if(err) {
+        throw err; // or handle err
+      }
+
+      JSZip.loadAsync(data).then(function (zip) {
+        return zip.file("airports.json").async("text");
+        }).then(function (txt) {
+          console.log("the content is", txt);
+
+          airports = JSON.parse(txt);
+          airportnames=[]
+          for (var key in airports){
+            airportnames.push(airports[key].name);
+          }
+          console.log("airports loaded");//,Object.keys(airports));
+          calculate_overpass(origin_ican,destination_ican,airports);
+          //Set up autcomplete fields
+          $( function() {
+            $( "#origin" ).autocomplete({
+              source: function(request, response) {
+                        var results = $.ui.autocomplete.filter(airportnames, request.term);
+                        response(results.slice(0, 10));
+                      },
+              minChars: 3,
+              select: function (event, ui) {
+                origin_ican = getAirportByName(airports,ui.item.value)
+                console.log(ui.item.value,origin_ican);
+                if (destination_ican!=""){
+                  calculate_overpass(origin_ican,destination_ican,airports);
+                }
               }
-            }
-          });
-          $( "#destination" ).autocomplete({
-            source: availableTags,
-            minChars: 3,
-            select: function (event, ui) {
-              destination_ican = getAirportByName(airports,ui.item.value)
-              console.log(ui.item.value,destination_ican);
-              if (origin_ican!=""){
-                calculate_overpass(origin_ican,destination_ican,airports);
+            });
+            $( "#destination" ).autocomplete({
+              source: function(request, response) {
+                        var results = $.ui.autocomplete.filter(airportnames, request.term);
+                        response(results.slice(0, 10));
+                      },
+              minChars: 3,
+              select: function (event, ui) {
+                destination_ican = getAirportByName(airports,ui.item.value)
+                console.log(ui.item.value,destination_ican);
+                if (origin_ican!=""){
+                  calculate_overpass(origin_ican,destination_ican,airports);
+                }
               }
-            }
-          });
-        } );
+            });
+          } );
+        })
 
-  }, 'text');
-
-
-});
+      });
+    });
 });
 
 $( "#submit" ).click(function() {
