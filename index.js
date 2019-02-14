@@ -28,12 +28,9 @@ $(function() {
       if(err) {
         throw err; // or handle err
       }
-
       JSZip.loadAsync(data).then(function (zip) {
         return zip.file("airports.json").async("text");
         }).then(function (txt) {
-          console.log("the content is", txt);
-
           airports = JSON.parse(txt);
           airportnames=[]
           for (var key in airports){
