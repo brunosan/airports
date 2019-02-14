@@ -1,4 +1,27 @@
-html, body, #map {
+html, body {
   height: 100%;
   width: 100%;
+}
+
+#map {
+  height: 100%;
+  width: 50%;
+}
+
+#flyovers{
+  background-color: #70c3be;
+  letter-spacing: 2px;
+  }
+#flyovers a{
+  text-decoration: none;
+}
+
+
+#flyovers{padding-bottom: 800px;}
+
+
+#author a{
+  color: #fff;
+  text-decoration: none;
+
 }
